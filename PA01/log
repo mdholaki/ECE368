@@ -1,0 +1,75 @@
+==24238== Memcheck, a memory error detector
+==24238== Copyright (C) 2002-2012, and GNU GPL'd, by Julian Seward et al.
+==24238== Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
+==24238== Command: ./proj1 s 100000.txt seq10.txt output.txt
+==24238== Parent PID: 22383
+==24238== 
+--24238-- 
+--24238-- Valgrind options:
+--24238--    --leak-check=full
+--24238--    --verbose
+--24238--    --log-file=log
+--24238-- Contents of /proc/version:
+--24238--   Linux version 2.6.32-431.5.1.el6.x86_64 (mockbuild@x86-002.build.bos.redhat.com) (gcc version 4.4.7 20120313 (Red Hat 4.4.7-4) (GCC) ) #1 SMP Fri Jan 10 14:46:43 EST 2014
+--24238-- Arch and hwcaps: AMD64, amd64-sse3-cx16
+--24238-- Page sizes: currently 4096, max supported 4096
+--24238-- Valgrind library directory: /usr/lib64/valgrind
+--24238-- Reading syms from /home/shay/a/mdholaki/ECE368/PA01/proj1
+--24238-- Reading syms from /usr/lib64/valgrind/memcheck-amd64-linux
+--24238--    object doesn't have a dynamic symbol table
+--24238-- Reading syms from /lib64/ld-2.12.so
+--24238-- Scheduler: using generic scheduler lock implementation.
+--24238-- Reading suppressions file: /usr/lib64/valgrind/default.supp
+==24238== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-24238-by-mdholaki-on-ecelinux22.ecn.purdue.edu
+==24238== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-24238-by-mdholaki-on-ecelinux22.ecn.purdue.edu
+==24238== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-24238-by-mdholaki-on-ecelinux22.ecn.purdue.edu
+==24238== 
+==24238== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==24238== don't want to do, unless you know exactly what you're doing,
+==24238== or are doing some strange experiment):
+==24238==   /usr/lib64/valgrind/../../bin/vgdb --pid=24238 ...command...
+==24238== 
+==24238== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==24238==   /path/to/gdb ./proj1
+==24238== and then give GDB the following command
+==24238==   target remote | /usr/lib64/valgrind/../../bin/vgdb --pid=24238
+==24238== --pid is optional if only one valgrind process is running
+==24238== 
+--24238-- REDIR: 0x36d8617530 (strlen) redirected to 0x38049551 (vgPlain_amd64_linux_REDIR_FOR_strlen)
+--24238-- Reading syms from /usr/lib64/valgrind/vgpreload_core-amd64-linux.so
+--24238-- Reading syms from /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so
+--24238-- REDIR: 0x36d86173a0 (index) redirected to 0x4a07bf0 (index)
+--24238-- REDIR: 0x36d8617420 (strcmp) redirected to 0x4a08530 (strcmp)
+--24238-- Reading syms from /lib64/libc-2.12.so
+--24238-- REDIR: 0x36d8a84fb0 (strcasecmp) redirected to 0x480155c (_vgnU_ifunc_wrapper)
+--24238-- REDIR: 0x36d8a87270 (strncasecmp) redirected to 0x480155c (_vgnU_ifunc_wrapper)
+--24238-- REDIR: 0x36d8a82f20 (__GI_strrchr) redirected to 0x4a07a70 (__GI_strrchr)
+--24238-- REDIR: 0x36d8a7a920 (malloc) redirected to 0x4a0696c (malloc)
+--24238-- REDIR: 0x36d8a7b800 (free) redirected to 0x4a06369 (free)
+==24238== 
+==24238== Process terminating with default action of signal 2 (SIGINT)
+==24238==    at 0x400990: Shell_Selection_Sort (in /home/shay/a/mdholaki/ECE368/PA01/proj1)
+==24238==    by 0x400E95: main (in /home/shay/a/mdholaki/ECE368/PA01/proj1)
+==24238== 
+==24238== HEAP SUMMARY:
+==24238==     in use at exit: 800,000 bytes in 1 blocks
+==24238==   total heap usage: 2 allocs, 1 frees, 800,568 bytes allocated
+==24238== 
+==24238== Searching for pointers to 1 not-freed blocks
+==24238== Checked 864,576 bytes
+==24238== 
+==24238== LEAK SUMMARY:
+==24238==    definitely lost: 0 bytes in 0 blocks
+==24238==    indirectly lost: 0 bytes in 0 blocks
+==24238==      possibly lost: 0 bytes in 0 blocks
+==24238==    still reachable: 800,000 bytes in 1 blocks
+==24238==         suppressed: 0 bytes in 0 blocks
+==24238== Reachable blocks (those to which a pointer was found) are not shown.
+==24238== To see them, rerun with: --leak-check=full --show-reachable=yes
+==24238== 
+==24238== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)
+--24238-- 
+--24238-- used_suppression:      4 U1004-ARM-_dl_relocate_object
+--24238-- used_suppression:      2 glibc-2.5.x-on-SUSE-10.2-(PPC)-2a
+==24238== 
+==24238== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)

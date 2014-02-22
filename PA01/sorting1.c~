@@ -1,0 +1,599 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+/*****************************************************************
+/ Function: Load_File
+/ Purpose: This function opens a user given file "filename" and
+/ reads the data from it. It stores the first integer as the size
+/ of an array of long numbers, then loads the numbers themselves
+/ into an array. The function then returns the address of this
+/ array.
+******************************************************************/
+
+long *Load_File(char *filename, int *size)
+{
+  int i, check;
+  FILE *fptr = fopen(filename, "r");
+  
+  check = fscanf(fptr, "%d", size);
+  if (check == 0){
+    fclose(fptr);
+    return NULL;
+  }
+
+  long *array = malloc(sizeof(long) * (*size));
+  for (i = 0; i < *size; i++){
+    check = fscanf(fptr, "%ld", &array[i]);
+    if (check == 0){
+      free(array);
+      fclose(fptr);
+      return NULL;
+    }
+  }
+
+  fclose(fptr);
+  return array;
+}
+
+/*****************************************************************
+/ Function: Save_File
+/ Purpose: This function opens a user give file "filename" and
+/ writes data to it. It writes the first integer as the size
+/ of an array of long numbers, then writes the numbers themselves
+/ from an array that has been sorted. The function then returns
+/ the number of characters printed to the file.
+******************************************************************/
+
+int Save_File(char *filename, long *array, int size)
+{
+  FILE *fptr = fopen(filename, "w");
+  int i;
+  int printed = 0;
+  int check = 0;
+  
+  fprintf(fptr, "%d\n", size);
+  for (i = 0; i < size; i++){
+    check = fprintf(fptr, "%ld\n", array[i]);
+    printed += check;
+  }
+  fclose(fptr);
+  return printed;
+}
+
+/*****************************************************************
+/ Function: find_k
+/ Purpose: This function takes the size of the array of numbers as
+/ input and finds the power of 3 that is just over the number of
+/ elements in the array. For example, if the input is size = 10,
+/ the function will return 3. 3^3 = 27 and 3^2 = 9
+******************************************************************/
+
+int find_k(int size)
+{
+  if (size == 1){
+    return 1;
+  }
+  
+  int p = 0;
+  int pow3 = 1;
+  while (pow3 <= size){
+    pow3 *= 3;
+    p++;
+  }
+  return p;
+}
+
+/*****************************************************************
+/ Function: k_numint
+/ Purpose: This function finds the number of integers in the
+/ triangle sequence. By using the tier as an input, with the tier
+/ being the power of 3 used to calculate the bottom of the
+/ triangle. For example if the trianlge went to 27, the tier would
+/ be 3.
+******************************************************************/
+
+int k_numint(int tier)
+{
+  int sum = 0;
+  while (tier >= 0){
+    sum += tier + 1;
+    tier -= 1;
+  }
+  return sum;
+}
+
+/*****************************************************************
+/ Function: power2
+/ Purpose: This function simply finds 2 to the power sent to it as
+/ an input and returns the result. If the input is 3, then the
+/ function will return 8.
+******************************************************************/
+
+int power2(int power) //computes the value of 2 raised to the power "power"
+{
+  if (power == 0){
+    return 1;
+  }
+
+  int n;
+  int pow2 = 1;
+  for (n = 1; n <= power; n++){
+    pow2 *= 2;
+  }
+  
+  return pow2;
+}
+
+/*****************************************************************
+/ Function: power3
+/ Purpose: This function simply finds 3 to the power sent to it as
+/ an input and returns the result. If the input is 3, then the
+/ function will return 27.
+******************************************************************/
+
+int power3(int power) //computes the value of 3 raised to the power "power"
+{
+  if (power == 0){
+    return 1;
+  }
+
+  int n;
+  int pow3 = 1;
+  for (n = 1; n <= power; n++){
+    pow3 *= 3;
+  }
+  
+  return pow3;
+}
+
+/*****************************************************************
+/ Function: gen_seq
+/ Purpose: This function generates the triangle sequence for k and
+/ stores this sequence in an array. The function then returns the
+/ address for this array. It takes the size of the array of data
+/ and an address to store the array size as inputs.
+******************************************************************/
+
+int *gen_seq(int size, int *len)
+{
+  int x = find_k(size);
+  int length = k_numint(x - 1);
+  *len = length;
+  int i = 0;
+  int k, p, q, j;
+  int *seq = malloc(sizeof(int) * length);
+  for (j = x - 1; j >= 0; j--){
+    for (p = j; p >= 0; p--){
+      q = j - p;
+      k = power2(q) * power3(p);
+      seq[i] = k;
+      i++;
+    }
+  }
+  return seq;
+}
+
+int * Sequence_make(int size, int * sequence_size)
+{
+  int n = 0;
+  int array_size; // size of the sequence
+  int * array; // the sequence
+
+  //DETERMINE SIZE OF SEQUENCE
+  while (power(3,n) < size)
+    {
+      n += 1;
+    }
+  n = n - 1;
+  array_size = ((n+1)*(n+2))/2;
+  *sequence_size = array_size;
+
+  //CREATE SEQUENCE
+  array = malloc(sizeof(int) * array_size);
+  if (array == NULL)
+    {
+      printf("MALLOC FAILED\n");
+      return NULL;
+    }
+
+  //FILL IN SEQUENCE
+  int i; //position
+  int p = 0; //2
+  int q = 0; //3
+  int pp; //increment
+  int qq; //decrement
+  
+  for (i = 0; i < array_size; i ++)
+    {
+      pp = p;
+      qq = 0;
+      while (pp >= 0 && qq <= q)
+{
+array[i] = power(2,pp) * power(3,qq);
+i++;
+pp--;
+qq++;
+}
+      i--;
+      p++;
+      q++;
+    }
+
+  return array;
+}
+
+/*****************************************************************
+/ Function: Shell_Insertion_Sort
+/ Purpose: This function sorts the array of data by using shell
+/ sort and insertion sort. It uses a sequence of k's found by
+/ using gen_seq. This sequence is used to divide the array into
+/ sub arrays and then the arrays are sorted using insertion sort.
+/ This function takes an array of data, the size of the array,
+/ and the addresses of n_comp and n_move as inputs. The function
+/ tracks the number of comparisons and the number of moves, then it
+/ stores them at the addresses provided.
+******************************************************************/
+
+void Shell_Insertion_Sort(long *array, int size, double *n_comp, double *n_move)
+{
+  int k, j, i, n, len;
+  long temp_r;
+  int *seq = gen_seq(size, &len);
+
+  for (n = 0; n < len; n++){
+    k = seq[n];
+    for (j = k; j < size; j++){
+      temp_r = array[j];
+      *n_move += 1;
+      i = j;
+      *n_comp += 1;
+      while ((i >= k) && (array[i - k] > temp_r)){
+array[i] = array[i - k];
+i = i - k;
+*n_comp += 1;
+*n_move += 1;
+      }
+      array[i] = temp_r;
+      *n_move += 1;
+    }
+  }
+  free(seq);
+}
+
+/*****************************************************************
+/ Function: Shell_Selection_Sort
+/ Purpose: This function sorts the array of data by using shell
+/ sort and selection sort. It uses a sequence of k's found by
+/ using gen_seq. This sequence is used to divide the array into
+/ sub arrays and then the arrays are sorted using selection sort.
+/ This function takes an array of data, the size of the array,
+/ and the addresses of n_comp and n_move as inputs. The function
+/ tracks the number of comparisons and the number of moves, then it
+/ stores them at the addresses provided.
+******************************************************************/
+
+void Shell_Selection_Sort(long *array, int size, double *n_comp, double *n_move)
+{
+  int k, j, i, n, len;
+  long temp_r;
+  int *seq = gen_seq(size, &len);
+  *n_comp = 0;
+  *n_move = 0;
+
+  for (n = 0; n < len; n++){
+    k = seq[n];
+    for (i = 0; i < size - 1; i++){
+      for (j = i + k; j < size; j += k){
+*n_comp += 1;
+if (array[i] > array[j]){
+temp_r = array[i];
+array[i] = array[j];
+array[j] = temp_r;
+*n_move += 3;
+}
+      }
+    }
+  }
+  free(seq);
+}
+
+/*****************************************************************
+/ Function: Print_Seq
+/ Purpose: This function generates the triangle sequence k and
+/ stores the sequence and its length in a file "filename" provided
+/ as one of the inputs. The other input is the size of the data
+/ array, which is used to generate the sequence. Unlike gen_seq,
+/ this function generates the sequence from top to bottom and left
+/ to right.
+******************************************************************/
+
+int Print_Seq(char *filename, int size)
+{
+  FILE *fptr = fopen(filename, "w");
+  int p, q, j, x, y, k;
+
+  x = find_k(size);
+  y = k_numint(x - 1);
+  fprintf(fptr, "%d\n", y);
+  for (j = 0; j < x; j++){
+    for (p = 0; p <= j; p++){
+      q = j - p;
+      k = power2(q) * power3(p);
+      fprintf(fptr, "%d\n", k);
+    }
+  }
+  fclose(fptr);
+  return y;
+}
+
+/*****************************************************************
+/ Function: PrintEvaluation
+/ Purpose: This function prints to the standard output the number
+/ of comparisons, the number of moves, the time it takes to read
+/ and write to the files, and the time it takes to sort. All of
+/ the numbers printed are taken in as inputs.
+******************************************************************/
+
+void PrintEvaluation(double n_comp, double n_move, double t_IO, double t_sort)
+{
+  printf("Number of comparisons: %le\n", n_comp);
+  printf("Number of moves: %le\n", n_move);
+  printf("I/O time: %le\n", t_IO);
+  printf("Sorting time: %le\n", t_sort);
+}
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "sorting.h"
+
+long * Load_File(char * Filename, int * Size)
+{
+  FILE * fh;
+  long * Array_toSort;
+  int i = 0;
+  int g;
+  
+  //CHECK FILE STATUS
+  fh = fopen(Filename, "r");
+  if (fh == NULL)
+    {
+      printf("ERROR\n");
+      printf("INVALID INPUT FILE!\n");
+      return NULL;
+    }
+
+  //READ FIRST LINE
+  g = fscanf(fh, "%d", Size);
+  if (g != 1)
+    {
+      printf("ERROR1\n");
+      fclose(fh);
+      return NULL;
+    }
+
+  //STORE THE ARRAY
+  Array_toSort = malloc(sizeof(long) * (*Size));
+  if (Array_toSort == NULL)
+    {
+      printf("MALLOC FAILED\n");
+      fclose(fh);
+      return NULL;
+    }
+
+  while (!feof(fh))
+    {
+      g = fscanf(fh, "%ld", &Array_toSort[i]);
+      i++;
+    }
+  if (g > 0)
+    {
+      printf("ERROR2\n");
+      free(Array_toSort);
+      fclose(fh);
+      return NULL;
+    }
+
+  fclose(fh);
+  return Array_toSort;
+}
+
+void Shell_Insertion_Sort(long * array, int size, double *N_comp, double *N_Move)
+{
+  int sequence_size;
+  int * sequence = Sequence_make(size, &sequence_size);
+  if (sequence == NULL)
+    {
+      return;
+    }
+  int i;
+  int j;
+  int k;
+  int temp_value;
+  
+  for (i = sequence_size - 1; i >= 0 ; i --)
+    {
+      for (j = sequence[i]; j < size; j ++)
+{
+temp_value = array[j];
+k = j;
+(*N_Move)++;
+while (k >= sequence[i] && array[k-sequence[i]] > temp_value)
+{
+array[k] = array[k - sequence[i]];
+k = k - sequence[i];
+(*N_Move)++;
+(*N_comp)+=2;
+}
+(*N_comp) += 2;
+array[k] = temp_value;
+(*N_Move)++;
+}
+    }
+  free(sequence);
+}
+
+void Shell_Selection_Sort(long * array, int size, double *N_comp, double *N_Move)
+{
+  int sequence_size;
+  int * sequence = Sequence_make(size, &sequence_size);
+  if (sequence == NULL)
+    {
+      return;
+    }
+
+  int i;
+  int j;
+  int k;
+  int min;
+  int temp;
+
+  for (i = sequence_size - 1; i >= 0; i--)
+    {
+      for (j = 0; j < size; j++)
+{
+min = j;
+for (k = j + sequence[i]; k < size; k+= sequence[i])
+{
+(*N_comp)++;
+if (array[k] < array[min])
+{
+min = k;
+}
+}
+if (min != j)
+{
+(*N_Move)+= 3;
+temp = array[j];
+array[j] = array[min];
+array[min] = temp;
+}
+}
+    }
+  free(sequence);
+}
+
+int * Sequence_make(int size, int * sequence_size)
+{
+  int n = 0;
+  int array_size; // size of the sequence
+  int * array; // the sequence
+
+  //DETERMINE SIZE OF SEQUENCE
+  while (power(3,n) < size)
+    {
+      n += 1;
+    }
+  n = n - 1;
+  array_size = ((n+1)*(n+2))/2;
+  *sequence_size = array_size;
+
+  //CREATE SEQUENCE
+  array = malloc(sizeof(int) * array_size);
+  if (array == NULL)
+    {
+      printf("MALLOC FAILED\n");
+      return NULL;
+    }
+
+  //FILL IN SEQUENCE
+  int i; //position
+  int p = 0; //2
+  int q = 0; //3
+  int pp; //increment
+  int qq; //decrement
+  
+  for (i = 0; i < array_size; i ++)
+    {
+      pp = p;
+      qq = 0;
+      while (pp >= 0 && qq <= q)
+{
+array[i] = power(2,pp) * power(3,qq);
+i++;
+pp--;
+qq++;
+}
+      i--;
+      p++;
+      q++;
+    }
+
+  return array;
+}
+
+long power(long base, int power)
+{
+  int i;
+  long sum = base;
+
+  //BASE CASES
+  if (power == 0)
+    {
+      return 1;
+    }
+  if (power == 1)
+    {
+      return base;
+    }
+
+  //POWER
+  for (i = 1; i < power; i ++)
+    {
+      sum = sum * base;
+    }
+  return sum;
+}
+
+int Save_File (char * filename, long * array, int size)
+{
+  FILE * fh;
+  int i;
+  
+  //CHECK FILE STATUS
+  fh = fopen(filename, "w");
+  if (fh == NULL)
+    {
+      printf("ERROR\n");
+      return 0;
+    }
+  
+  //PRINT TO FILE
+  fprintf(fh, "%d\n", size);
+  for (i = 0; i < size; i ++)
+    {
+      fprintf(fh, "%ld\n", array[i]);
+    }
+
+  fclose(fh);
+  return 1;
+}
+
+int Print_Seq (char * filename, int size)
+{
+  FILE * fh;
+  int i;
+
+  //CHECK FILE STATUS
+  fh = fopen(filename, "w");
+  if (fh == NULL)
+    {
+      printf("ERROR\n");
+      return 0;
+    }
+  
+  //GENERATE SEQUENCE
+  int sequence_size;
+  int * sequence = Sequence_make(size, &sequence_size);
+
+  //PRINT TO FILE
+  fprintf(fh, "%d\n", sequence_size);
+  for (i = 0; i < sequence_size; i++)
+    {
+      fprintf(fh, "%d\n", sequence[i]);
+    }
+
+  free(sequence);
+  fclose(fh);
+  return sequence_size;
+}
