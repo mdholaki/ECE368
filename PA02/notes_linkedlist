@@ -1,0 +1,303 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+/***************************************************************
+/ Data Types: List, Node
+/ Description: Node is a singly linked list with a single long
+/ int. List is a singly linked list which points to the head node of a Node
+/ type list
+***************************************************************/
+typedef struct _node {
+  long value;
+  struct _node *next;
+} Node;
+
+typedef struct _list {
+  Node *node;
+  struct _list *next;
+} List;
+
+//Global Declarations: list of arrays, pointer to unused list and size
+//initialization
+
+List *nlist = NULL;
+Node *unused_list = NULL;
+int arr_size = 0;
+int size = 0;
+
+/***************************************************************
+/ Function: mymalloc
+/ Arguments: List **list, Node **un_list
+/ Description: This function allocates a new List with a new
+/ empty array or "allocates" memory for data storage. The double
+/ pointer is to adjust for the lack of global variables
+***************************************************************/
+Node *mymalloc()
+{
+  if (unused_list == NULL){
+    Node *node_arr = malloc(sizeof(Node)*arr_size);
+    int i;
+    for (i = 0; i < arr_size - 1; i++){
+      node_arr[i].next = &(node_arr[i+1]);
+    }
+    node_arr[i].next = NULL;
+    
+    List *arr = malloc(sizeof(List));
+    arr->node = node_arr;
+    arr->next = nlist;
+    nlist = arr;
+
+    unused_list = &(node_arr[0]);
+  }
+
+  Node *node = unused_list;
+  unused_list = unused_list->next;
+  return node;
+}
+
+/***************************************************************
+/ Function: Load_File
+/ Arguments: char *Filename, List *list, Node *un_list
+/ Description: This function opens a file that the user provides
+/ and loads the data in the file into a linked list. The address
+/ for this linked list is then returned
+***************************************************************/
+Node *Load_File(char *filename)
+{
+  FILE *fptr = fopen(filename, "r");
+  Node *node1 = mymalloc();
+  Node *node2 = NULL, *node3 = node1;
+  int check = 1;
+
+  while(check == 1){
+    check = fscanf(fptr, "%ld", &(node3->value));
+    if(check == 1){
+      node3->next = mymalloc();
+      node2 = node3;
+      node3 = node3->next;
+      node3->next = NULL;
+      size += 1;
+    }
+  }
+
+  node3->next = unused_list;
+  unused_list = node3;
+  node2->next = NULL;
+  fclose(fptr);
+  return(node1);
+}
+
+/***************************************************************
+/ Function: Save_File
+/ Arguments: char *Filename, Node *list
+/ Description: This function opens a file that the user provides
+/ and saves a sorted linked list to the file. Once complete, the
+/ function returns the number of printed items
+***************************************************************/
+int Save_File(char *filename, Node *list)
+{
+  FILE *fptr = fopen(filename, "w");
+  int check = 0;
+
+  while (list){
+    check = fprintf(fptr, "%ld\n", list->value);
+    list = list->next;
+  }
+
+  fclose(fptr);
+  return check;
+}
+
+/***************************************************************
+/ Function: power2
+/ Arguments: int power
+/ Description: This function raises two to the power that is
+/ provided as an argument, and then returns the answer.
+***************************************************************/
+int power2(int power)
+{
+  if (power == 0){
+    return 1;
+  }
+
+  int n;
+  int pow2 = 1;
+  for (n = 1; n <= power; n++){
+    pow2 *= 2;
+  }
+
+  return pow2;
+}
+
+/***************************************************************
+/ Function: power3
+/ Arguments: int power
+/ Description: This function raises three to the power that is
+/ provided as an argument, and then returns the answer.
+***************************************************************/
+int power3(int power)
+{
+  if (power == 0){
+    return 1;
+  }
+
+  int n;
+  int pow3 = 1;
+  for (n = 1; n <= power; n++){
+    pow3 *= 3;
+  }
+
+  return pow3;
+}
+
+/***************************************************************
+/ Function: Find_K
+/ Arguments: int size
+/ Description: This function takes the size of the linked_list
+/ and finds the highest power of 3 that is just above the size
+/ of the linked list. The power is returned.
+***************************************************************/
+int Find_K()
+{
+  if (size == 1){
+    return 1;
+  }
+
+  int p = 0;
+  int pow3 = 1;
+  while (pow3 <= size){
+    pow3 *= 3;
+    p++;
+  }
+
+  return (p);
+}
+
+/***************************************************************
+/ Function: k_numint
+/ Arguments: int tier
+/ Description: This function takes the size of the linked_list
+/ and finds the highest power of 3 that is just above the size
+/ of the linked list. The power is returned.
+***************************************************************/
+int k_numint(int tier)
+{
+  int sum = 0;
+  while (tier >= 0){
+    sum += tier + 1;
+    tier -= 1;
+  }
+  
+  return sum;
+}
+
+/***************************************************************
+/ Function: gen_seq
+/ Arguments: int size, int *len
+/ Description: This function takes the size of the linked_list
+/ and finds the highest power of 3 that is just above the size
+/ of the linked list. The power is returned.
+***************************************************************/
+int *gen_seq(int *len)
+{
+  int x = Find_K();
+  int length = k_numint(x - 1);
+  *len = length;
+  int i = 0;
+  int k, p, q, j;
+  int *seq = malloc(sizeof(int) * length);
+  
+  for (j = x - 1; j >= 0; j--){
+    for (p = j; p >= 0; p--){
+      q = j - p;
+      k = power2(q) * power3(p);
+      seq[i] = k;
+      i++;
+    }
+  }
+
+  return (seq);
+}
+
+/***************************************************************
+/ Function: Shell_Sort
+/ Arguments: Node *list
+/ Description: This function takes an unsorted linked list and
+/ sorts it. It does this using shell sort with insertion sort.
+***************************************************************/
+Node *Shell_Sort(Node *list)
+{
+  int k = 0, j = 0, i = 0, n = 0, len = 0;
+  long temp = 0;
+  int *seq = gen_seq(&len);
+  Node *n1, *n2, *n3;
+  
+  n1 = list;
+  n2 = NULL;
+  n3 = n1;
+
+  for (n = 0; n < len; n++){
+    k = seq[n];
+    n1 = list;
+    for (i = k; i < size; i++){
+      temp = n1->value;
+      n3 = n1;
+      n2 = n3;
+      j = 0;
+      while ((j < k) && (n3 != NULL)){
+n3 = n3->next;
+j++;
+      }
+      j = 0;
+      while ((n3 != NULL) && (temp > n3->value)){
+n2->value = n3->value;
+n2 = n3;
+while ((j < k) && (n3 != NULL)){
+n3 = n3->next;
+j++;
+}
+j = 0;
+      }
+      n2->value = temp;
+      n1 = n1->next;
+    }
+  }
+  free(seq);
+  return list;
+}
+
+/***************************************************************
+/ Function: list_release
+/ Arguments: Node *list
+/ Description: This function release all allocated memory
+/ related to list and its node
+***************************************************************/
+void list_release(List *head)
+{
+  List *temp = NULL;
+  while (head){
+    temp = head->next;
+    free(head->node);
+    free(head);
+    head = temp;
+  }
+}
+
+#ifdef MYTEST
+
+int main(int argc, char **argv)
+{
+  arr_size = sysconf(_SC_PAGESIZE) / sizeof(Node);
+  Node *node = Load_File(argv[1]);
+  printf("%ld\n", nlist->node[0].value);
+  node = Shell_Sort(node);
+  printf("%ld\n", node[0].value);
+  int check = Save_File(argv[2], node);
+  printf("%d\n", check);
+  printf("%d\n", size);
+  list_release(nlist);
+  return EXIT_SUCCESS;
+}
+
+#endif
