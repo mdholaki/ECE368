@@ -22,6 +22,10 @@ Node * Create_Node(long num);
 void Destroy_node(Node * head);
 Node * Insert_Node(Node * head, long num);
 int Save_File(char *Filename, Node *list);
+Node * ListTraverse(Node * head, int j);
+void ListSwap(int num, Node * head, int position);
+Node * Shell_Sort(Node * head);
+int size_count(Node * head);
 
 #endif
 

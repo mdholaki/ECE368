@@ -20,7 +20,7 @@ typedef struct _list{
 Node * Load_File(char * Filename);
 Node * Create_Node(long num);
 void Destroy_node(Node * head);
-void Insert_Node(Node * head, long num);
+Node * Insert_Node(Node * head, long num);
 int Save_File(char *Filename, Node *list);
 
 #endif

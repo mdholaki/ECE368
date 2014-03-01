@@ -5,30 +5,37 @@
 
 int main(int argc, char ** argv)
 {
-  /*if(argc != 3)
-  {
-    printf("Error\n");
-    printf("Inputs are Invalid!\n");
-    return EXIT_FAILURE
-  } */
+  /* Load File Into a Linked List */
+  clock_t Input;
+  clock_t Output;
+  clock_t SortInit;
+  clock_t SortFin;
+  clock_t SortTime;
+  clock_t IO_time;
+  Node * head = NULL;
+  Input = clock();
+  head = Load_File(argv[1]);
   
+ //Use Shell Sort to sort the list  
+  SortInit = clock();
   
-  Node * List_unsorted = NULL;
+  head = Shell_Sort(head);
   
-  List_unsorted = Load_File(argv[1]);
-  /*printf("List:\n");
-  while (List_unsorted != NULL)
-  {
-    printf("%ld\n", List_unsorted -> value);
-    List_unsorted = List_unsorted -> next;
-    
-  } */
+  SortFin = clock();
+  
   int check;
-  check = Save_File(argv[2], List_unsorted);
- 
+  check = Save_File(argv[2], head);
+  Output = clock();
+  Destroy_node(head);
   
+  SortTime = (SortFin - SortInit)/CLOCKS_PER_SEC;
+  IO_time = ((Output - Input)/CLOCKS_PER_SEC);
+  IO_time -= SortTime;
+  
+  printf("I/O Time: %le\n", (double) IO_time);
+  printf("Sort Time: %le\n", (double) SortTime);
 
-  return 0;
+  return EXIT_SUCCESS;
 }
   
   

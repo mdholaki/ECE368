@@ -10,16 +10,18 @@ Node *Load_File(char *Filename)
   //int check = 0;
   long num = 0;
   
-  while(fscanf(fptr, "%ld", &num) == 1)
+  while(fscanf(fptr, "%ld", &num) != EOF)
   {
     Head = Insert_Node(Head, num);
-  }
+  } 
   
   /* while (Head != NULL)
   {
     printf("Head = %ld\n", Head -> value);
     Head = Head -> next;
   } */
+  
+  fclose(fptr);
   
   return Head;
 }
@@ -40,70 +42,96 @@ Node *Insert_Node(Node *Head, long num)
   return new;
 }
 
-int Save_File(char *Filename, Node * List)
+int Save_File(char *Filename, Node * head)
 {
   FILE * fptr = NULL;
-  int i = 0;
+  int size = 0;
   fptr = fopen(Filename, "w");
-  Node * tmp = List; 
+  Node * tmp = head; 
   
   while(tmp != NULL)
   {
     fprintf(fptr, "%ld\n", tmp -> value);
     tmp = tmp -> next;
-    i++;
+    size++;
   }
   
   fclose(fptr);
   
-  return i;
+  return size;
 }
 
-  
- 
-  
-  
- 
-
-
-
-
-
-
-
-
-/*node * ListTraverse(Node * head, int j)
+void Destroy_node(Node * head)
 {
-  while (count <= j)
+  while (head != NULL)
   {
-    head = head -> next;
+    Node * p = head -> next;
+    free(head);
+    head = p;
+  }
+}
+  
+/////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+
+
+
+Node * ListTraverse(Node * head, int j)
+{
+  int count = 0;
+  Node *temp = head;
+  while (count < j)
+  {
+    temp = temp -> next;
+    count++;
   }
   
-  return head;
+  return (temp);
 }
 
-node * ListInsert(Node * head, int i, int compare)
+void ListSwap(int num, Node * head, int position)
 {
+  Node * temp1 = head;
   
+  temp1 = ListTraverse(temp1, position);
   
+  temp1 -> value = num;
+}
 
-void Shell_Insertion_Sort(Node * head, int * Size)
+int size_count(Node * head)
+{
+  int count = 0;
+  while (head != NULL)
+  {
+    head = head -> next;
+    count++;
+  }
+  return count; 
+}
+
+Node *Shell_Sort(Node * head)
 {
   int k = 1;
   int p = 0;
-  int n = size; 
+  int n = 0;
+  n = size_count(head);
   int tmp = 0;
   int i = 0;
   int seq_count = 0;
   int gap = 0;
   int j = 0;
-  Node * list_tmp = head;
+  
+  Node * list_temp = head;
   Node * list_comp = head;
+  //Node * temp = head; 
+  int comp_position = 0;
+  int compare = 0;
   
   while (k < n)
   {
     k = k * 3;
-    p++
+    p++;
   }
   
   k = k/3;
@@ -117,28 +145,39 @@ void Shell_Insertion_Sort(Node * head, int * Size)
     {
       for(j = gap; j < n; j++)
       {
-	list = ListTraverse(list_tmp, j);
-	tmp = list_tmp -> value;
+	
+	list_temp = ListTraverse(head, j);
+	tmp = list_temp -> value;
 	i = j;
-	while((i >= gap))
+	
+	comp_position = i - gap;
+	list_comp = ListTraverse(head, comp_position);
+	compare = list_comp -> value;
+	while((i >= gap) && (compare > tmp))
 	{
-	  compare = ListTraverse((head, i - gap));
-	  if (compare > tmp)
-	  {
-	    head = ListInsert(head,i,compare);
-	    i = i - gap;
-	  }
+	 ListSwap(compare, head, i);
+	 
+	 i = i - gap; 
+	 comp_position = i - gap;
+	 list_comp = ListTraverse(head, comp_position);
+	 compare = list_comp -> value;
+	 
 	}
-	head = ListInsert(head,i,tmp);
+	ListSwap(tmp, head, i);	
+	
       }
+      
       gap = gap/3 * 2;
       seq_count--;
-    }while (seq_count >= 0)
+      
+    }while (seq_count >= 0);
     
     k = k/3;
     p--;
   }
-} */
+  
+  return (head);
+} 
 	
   
 

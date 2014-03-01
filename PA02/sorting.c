@@ -10,16 +10,20 @@ Node *Load_File(char *Filename)
   //int check = 0;
   long num = 0;
   
-  while(fscanf(fptr, "%ld", &num) == 1)
+  //Loads the File using the insert nodes
+  
+  while(fscanf(fptr, "%ld", &num) != EOF)
   {
     Head = Insert_Node(Head, num);
-  }
+  } 
   
   /* while (Head != NULL)
   {
     printf("Head = %ld\n", Head -> value);
     Head = Head -> next;
   } */
+  
+  fclose(fptr);
   
   return Head;
 }
@@ -43,7 +47,7 @@ Node *Insert_Node(Node *Head, long num)
 int Save_File(char *Filename, Node * head)
 {
   FILE * fptr = NULL;
-  int i = 0;
+  int size = 0;
   fptr = fopen(Filename, "w");
   Node * tmp = head; 
   
@@ -51,94 +55,133 @@ int Save_File(char *Filename, Node * head)
   {
     fprintf(fptr, "%ld\n", tmp -> value);
     tmp = tmp -> next;
-    i++;
+    size++;
   }
   
   fclose(fptr);
   
-  return i;
+  return size;
 }
 
-  
- 
-  
-  
- 
-
-
-
-
-
-
-
-
-/*node * ListTraverse(Node * head, int j)
+void Destroy_node(Node * head)
 {
-  while (count <= j)
+  while (head != NULL)
   {
-    head = head -> next;
+    Node * p = head -> next;
+    free(head);
+    head = p;
+  }
+}
+  
+/////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+
+//Traverses to the indicated position j
+
+Node * ListTraverse(Node * head, int j)
+{
+  int count = 0;
+  Node *temp = head;
+  while (count < j)
+  {
+    temp = temp -> next;
+    count++;
   }
   
-  return head;
+  return (temp);
 }
 
-node * ListInsert(Node * head, int i, int compare)
-{
-  
-  
+//Replaces a value in the linked list with num 
 
-void Shell_Insertion_Sort(Node * head, int * Size)
+void ListSwap(int num, Node * head, int position)
+{
+  Node * temp1 = head;
+  
+  temp1 = ListTraverse(temp1, position);
+  
+  temp1 -> value = num;
+}
+
+//Finds the size of the linked list 
+int size_count(Node * head)
+{
+  int count = 0;
+  while (head != NULL)
+  {
+    head = head -> next;
+    count++;
+  }
+  return count; 
+}
+
+Node *Shell_Sort(Node * head)
 {
   int k = 1;
   int p = 0;
-  int n = size; 
+  int n = 0;
+  n = size_count(head);
   int tmp = 0;
   int i = 0;
   int seq_count = 0;
   int gap = 0;
   int j = 0;
-  Node * list_tmp = head;
+  
+  Node * list_temp = head;
   Node * list_comp = head;
+  //Node * temp = head; 
+  int comp_position = 0;
+  int compare = 0;
   
   while (k < n)
   {
     k = k * 3;
-    p++
+    p++;
   }
   
   k = k/3;
   p--;
-  
-  while (p >= 0)
+  //Generates the largest value of K
+  while (p >= 0) //Iterates level of pyramids 
   {
     gap = k;
     seq_count = p;
     do
     {
-      for(j = gap; j < n; j++)
+      for(j = gap; j < n; j++) 
       {
-	list = ListTraverse(list_tmp, j);
-	tmp = list_tmp -> value;
+	list_temp = ListTraverse(head, j); 
+	tmp = list_temp -> value; //Finds temps values 
 	i = j;
-	while((i >= gap))
+	
+	comp_position = i - gap; 
+	list_comp = ListTraverse(head, comp_position);
+	compare = list_comp -> value;
+	while((i >= gap) && (compare > tmp))
 	{
-	  compare = ListTraverse((head, i - gap));
-	  if (compare > tmp)
-	  {
-	    head = ListInsert(head,i,compare);
-	    i = i - gap;
-	  }
+	 ListSwap(compare, head, i); //Swaps code
+	 
+	 i = i - gap; 
+	 comp_position = i - gap;
+	 list_comp = ListTraverse(head, comp_position);
+	 compare = list_comp -> value;
+	 
 	}
-	head = ListInsert(head,i,tmp);
+	ListSwap(tmp, head, i);	//Puts temp value back in to the list
+	
       }
+      
       gap = gap/3 * 2;
       seq_count--;
-    }while (seq_count >= 0)
+      
+    }while (seq_count >= 0);
     
     k = k/3;
     p--;
   }
-} */
+  
+  return (head);
+} 
 	
   
 
