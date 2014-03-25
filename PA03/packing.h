@@ -24,7 +24,7 @@ typedef struct _node{
 Tree * Load_File(char * Filename, int * num_nodes, int * blocks);
 Tree * SetRoot(Tree * Load_Tree, int num_nodes);
 Tree * TreeBuild(Tree * Load_Tree,Tree * root, int num_nodes);
-Tree * SearchTree(Tree * Binary_tree, int i);
+//Tree * SearchTree(Tree * Binary_tree, int i);
 void PreOrder(Tree * Binary_tree);
 void PostOrder(Tree * Binary_tree);
 void InOrder(Tree * Binary_tree);

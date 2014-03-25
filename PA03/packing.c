@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "packing.h"
+#include <time.h>
 
 int main(int argc, char ** argv)
 {
@@ -11,12 +12,17 @@ int main(int argc, char ** argv)
   int blocks = 0;
   int x = 0;
   int y = 0;
+  clock_t Pack_HW_Init;
+  clock_t Pack_HW_Fin;
+  clock_t Pack_XY_Init;
+  clock_t Pack_XY_Fin;
   
   Load_Tree = Load_File(argv[1], &num_nodes, &blocks);
   root = SetRoot(Load_Tree, num_nodes);
   Binary_tree = TreeBuild(Load_Tree, root, num_nodes);
+  Pack_HW_Init = clock();
   PostOrderPack(Binary_tree);
-  
+  Pack_HW_Fin = clock();
   
   printf("\nPreorder: ");
   PreOrder(Binary_tree);
@@ -25,13 +31,16 @@ int main(int argc, char ** argv)
   printf("\n\nPostorder: ");
   PostOrder(Binary_tree);
   
-  printf("\n\nWidth: %lf", Binary_tree -> width);
-  printf("\nHeight: %lf\n", Binary_tree -> height);
+  printf("\n\nWidth: %le", Binary_tree -> width);
+  printf("\nHeight: %le\n", Binary_tree -> height);
+  
+  clock_t Pack_XY_Init;
   xy_coord(Binary_tree,x,y, blocks);
+  clock_t Pack_XY_Fin;
   
-  printf("\nElapsed Time: 0.00000\n");
+  printf("\nElapsed Time: 0.00000\n\n");
   
-  Save_File(argv[2], Binary_tree, blocks);
+  Save_File(argv[2], Load_Tree, blocks);
   
   
   
@@ -90,13 +99,13 @@ Tree * Load_File(char * Filename, int * num_nodes, int * blocks)
       
       else if (j == 5)
       {
-	scan_check = fscanf(fptr, "%lf", &load_tree[i].width);
+	scan_check = fscanf(fptr, "%le", &load_tree[i].width);
 	//printf("Width: %lf\n", load_tree[i].width);
       }
       
       else
       {
-	scan_check = fscanf(fptr, "%lf", &load_tree[i].height);
+	scan_check = fscanf(fptr, "%le", &load_tree[i].height);
 	//printf("Length: %lf\n\n", load_tree[i].length);
       }
       load_tree[i].parent = NULL;
@@ -228,8 +237,8 @@ void xy_coord(Tree * Binary_tree, double x, double y, int blocks)
     if ((Binary_tree -> thisnode) == blocks)
     {
       printf("\n\n");
-      printf("X-Coordinate: %lf\n", Binary_tree -> xc);
-      printf("Y-Coordinate: %lf\n", Binary_tree -> yc);
+      printf("X-Coordinate: %le\n", Binary_tree -> xc);
+      printf("Y-Coordinate: %le\n", Binary_tree -> yc);
     } 
   }
 }
@@ -266,7 +275,7 @@ void InOrder(Tree * Binary_tree)
   }
 } 
       
-Tree * SearchTree(Tree * Binary_tree, int i)
+/*Tree * SearchTree(Tree * Binary_tree, int i)
 {
   Tree * search = NULL;
   if (Binary_tree != NULL)
@@ -281,32 +290,27 @@ Tree * SearchTree(Tree * Binary_tree, int i)
     }
   }
   return NULL;
-}
+} */
   
-void Save_File(char * Filename, Tree * Binary_tree, int blocks)
+void Save_File(char * Filename, Tree * Load_Tree, int blocks)
 {
   FILE * fptr = NULL;
   
   fptr = fopen(Filename, "w");
   fprintf(fptr, "%d\n", blocks);
-  //Tree * Search = NULL;
-  int i;
-  for (i = 1; i <= blocks; i++)
-  {
-     Binary_tree = SearchTree(Binary_tree, i);
-    
-    fprintf(fptr, "%d ", Binary_tree -> thisnode);
-    
-    fprintf(fptr, "%lf ", Binary_tree -> width);
-    
-    fprintf(fptr, "%lf ", Binary_tree -> height);
-    
-    fprintf(fptr, "%lf ", Binary_tree -> xc);
-    
-    fprintf(fptr, "%lf \n", Binary_tree -> yc);
-    printf("Over\n");
-  }
   
-
+  int i;
+  for (i = 0; i < blocks; i++)
+  { 
+    fprintf(fptr, "%d ", Load_Tree[i].thisnode);
+    
+    fprintf(fptr, "%le ", Load_Tree[i].width);
+    
+    fprintf(fptr, "%le ", Load_Tree[i].height);
+    
+    fprintf(fptr, "%le ", Load_Tree[i].xc);
+    
+    fprintf(fptr, "%le \n", Load_Tree[i].yc);
+  }
   fclose(fptr);
 }
