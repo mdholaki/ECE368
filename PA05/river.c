@@ -200,8 +200,8 @@ int FindWeight(Vertex * vert_list, int source, int dest)
   int End_Row_dest = vert_list[dest].end_row;
   int col_diff;
   int row_diff;
-  int weight;
-
+  int weight = 0;
+  //printf("Col Dest: %d\n", Start_Row_source);
   if (col_dest > col_source)
   {
     col_diff = col_dest - col_source;
@@ -220,14 +220,19 @@ int FindWeight(Vertex * vert_list, int source, int dest)
   {
     row_diff = Start_Row_dest - End_Row_Source;
   }
-  
+  /*printf("Start Row Source: %d\n", Start_Row_source);
+  printf("End Row Source: %d\n", End_Row_Source);
+  printf("Start Row Dest: %d\n", Start_Row_dest);
+  printf("End Row Dest: %d\n", End_Row_dest);
+  printf("\n");
+  printf("Row Diff %d\n", row_diff); */
   //Calculate the Weight
   int weight_row = (2 * row_diff) - 2;
   int weight_col = (2 * col_diff) - 1;
-  //printf("Row: %d\n", weight_row);
+  //printf("Row Weight: %d\n\n", weight_row);
   //printf("Row Diff: %d\n", row_diff);
   
-  if ((weight_row > weight_col) &&  (weight_col > 0))
+  /*if ((weight_row > weight_col) &&  (weight_col > 0))
   {
     weight = weight_col;
   }
@@ -235,17 +240,40 @@ int FindWeight(Vertex * vert_list, int source, int dest)
   {
     weight = weight_row;
   }
-  else
+  else if ((weight_col > weight_row) && (weight_row < 0))
+  {
+    weight = weight_col;
+  }
+  else if ((weight_row > weight_col) && (weight_col < 0))
   {
     weight = weight_row;
-    //printf("test\n");
-  }
-  
-  if ((col_source == 0) || (col_dest == 0))
+  } */
+  if ((row_diff > col_diff))
   {
-    weight--;
+    weight = weight_row;
+  }
+  else if ((col_diff > row_diff))
+  {
+    weight = weight_col;
+  }
+  if ((row_diff < 0))
+  {
+    weight = weight_col;
+  }
+  if ((col_diff < 0))
+  {
+    weight = weight_row;
   }
   
+    
+  //printf("Weight: %d\n", weight);
+  if ((col_source == 0))
+  {
+    //printf("test\n");
+    weight--;
+    //weight--;
+  }
+  //printf("Weight: %d\n", weight);
  return weight; 
 }
 
@@ -261,10 +289,24 @@ Edge * newEdge(int index, int weight)
 
 Edge * InsertEdge(Edge * Head, int index, int weight)
 {
-  Edge * new = newEdge(index,weight);
-  new -> next = Head;
+  Edge * temp = newEdge(index,weight);
   
-  return new;
+  if (Head == NULL)
+  {
+    Head = temp;
+    return Head; 
+  }
+  else 
+  {
+    Edge * last = Head;
+    while (last -> next != NULL)
+    {
+      last = last -> next;
+    }
+    last -> next = temp; 
+    return Head;
+  }
+  
 }
 
 void adj_list_build(Vertex * vert_list, int size, int N, int verts)
@@ -274,14 +316,14 @@ void adj_list_build(Vertex * vert_list, int size, int N, int verts)
   int index;
   //Edge * head = NULL;
   //Vertex * adj_list = malloc(sizeof(Vertex) * (verts));
+  
   for (index = 0; index < (verts + 2); index++)
   { 
-    
     for (i = 0;i < (verts + 2);i++)
     {
       if (i != index)
       {
-	weight = FindWeight(vert_list,i,index);
+	weight = FindWeight(vert_list,index,i);
 	vert_list[index].head = InsertEdge(vert_list[index].head,i,weight);
      }
     }
@@ -290,9 +332,10 @@ void adj_list_build(Vertex * vert_list, int size, int N, int verts)
   //printf("Vertex: %d\n", node -> vertex_idx);
   while (Head != NULL)
   {
-    printf("Head = %d\n", Head -> vertex_idx);
+    printf("Head Index = %d\n", Head -> vertex_idx);
+    printf("Head Weight = %d\n", Head -> weight);
     Head = Head -> next;
-  }
+  } 
 }
       
     
