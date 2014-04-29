@@ -14,6 +14,7 @@ int main(int argc, char ** argv)
   Vertex * vert_list = BuildGraph(array,size,N);
   int verts = num_vert(array,size,N);
   adj_list_build(vert_list,size,N, verts);
+  Bellman_Ford(vert_list, (verts + 2),N);
   //int weight = FindWeight(vert_list,3,4);
  // printf("Weight: %d\n", weight);
   //int i = 0; 
@@ -328,17 +329,59 @@ void adj_list_build(Vertex * vert_list, int size, int N, int verts)
      }
     }
   }
-  Edge * Head = vert_list[2].head;
-  //printf("Vertex: %d\n", node -> vertex_idx);
+  /* Edge * Head = vert_list[0].head;
   while (Head != NULL)
   {
     printf("Head Index = %d\n", Head -> vertex_idx);
     printf("Head Weight = %d\n", Head -> weight);
     Head = Head -> next;
-  } 
+  } */ 
 }
       
-    
+      
+void Bellman_Ford(Vertex * vert_list, int verts, int N)
+{
+  int dist[verts];
+  int i,j;
+  int weight = 0;
+  //Edge * Head = NULL;
+  for (i = 0; i < verts; i++)
+  {
+    dist[i] = 1994;
+  }
+  
+  dist[0] = 0;
+  
+  for (i = 1; i <= (verts - 1); i++)
+  {
+    for(j = 0; j < verts; j++)
+    {
+      int u = i -1; //Source
+      int v = vert_list -> head[j].vertex_idx; //dest
+      weight = vert_list -> head[j].weight; //weight
+      if (dist[v] > dist[u] + weight)
+      {
+	dist[v] = dist[u] + weight;
+        //pred[v] = vert_list[i-1];
+      }
+      printf("Test\n");
+    }
+    printf("More Test\n");
+  }
+  printf("hmmm\n");
+  int m;
+  for (m = 0; m < (verts -1);m++)
+  {
+   printf("Turns: %d\n", dist[m]);
+  }
+}
+  
+      
+      
+      
+ 
+  
+  
   
       
   
