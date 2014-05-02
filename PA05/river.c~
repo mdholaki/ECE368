@@ -15,26 +15,6 @@ int main(int argc, char ** argv)
   int verts = num_vert(array,size,N);
   adj_list_build(vert_list,size,N, verts);
   Bellman_Ford(vert_list, (verts + 2),N);
-  //int weight = FindWeight(vert_list,3,4);
- // printf("Weight: %d\n", weight);
-  //int i = 0; 
-  //for (i = 0; i < (verts + 2); i++)
-  //{
-    //printf("Vertex 1 Column: %d\n", vert_list[0].col);
-    //printf("Vertex 1 Head: %d\n", (vert_list[0].head) -> vertex_idx);
-    //for(j = 0; j < verts + 2); j++)
-    //{
-      
-  
-  
-  /*printf("Array:");
-  int i;
-  
-  for (i = 0; i < size; i++)
-  {
-    printf(" %c ", array[i]);
-  }
-  printf("\n"); */
   
   return 0;
 }
@@ -202,7 +182,12 @@ int FindWeight(Vertex * vert_list, int source, int dest)
   int col_diff = -1;
   int row_diff = -1;
   int weight = 0;
-  
+//   printf("Col_source: %d\n", col_source);
+//   printf("Col_Dest: %d\n", col_dest);
+//   printf("Start Row Source: %d\n", Start_Row_source);
+//   printf("End Row Source: %d\n", End_Row_Source);
+//   printf("Start Row Dest: %d\n", Start_Row_dest);
+//   printf("End Row Dest: %d\n", End_Row_dest);
   //Initialize Column and Row Differences
    if (col_dest > col_source)
    {
@@ -221,11 +206,16 @@ int FindWeight(Vertex * vert_list, int source, int dest)
     {
       row_diff = Start_Row_source - End_Row_dest;
     }
-  
+    
+   
   //Find which Weight you need to use 
   if (col_dest == col_source)
   { 
     weight = 2 * row_diff;
+  }
+  else if ((Start_Row_source == Start_Row_dest) && (End_Row_dest == End_Row_Source))
+  {
+    weight = (2 * col_diff) -1;
   }
   
   else if (col_dest != col_source)
@@ -246,7 +236,7 @@ int FindWeight(Vertex * vert_list, int source, int dest)
     {
       weight = (col_diff * 2) - 1;
     }
-    else if (row_diff > col_diff)
+    else if (row_diff >= col_diff)
     {
       weight = (row_diff * 2);
     }
@@ -254,78 +244,19 @@ int FindWeight(Vertex * vert_list, int source, int dest)
   
   if (col_source == 0 || col_dest == 0)
   {
-    weight--;
+    if (col_dest > 2)
+    {
+      weight = weight - 2;
+    }
+    else
+    {
+      weight--;
+    }
   }
+
   return weight;
-}    
-/*  
+}     
 
-int FindWeight(Vertex * vert_list, int source, int dest)
-{
-  int col_source = vert_list[source].col;
-  int Start_Row_source = vert_list[source].start_row;
-  int End_Row_Source = vert_list[source].end_row;
-  int col_dest = vert_list[dest].col;
-  int Start_Row_dest = vert_list[dest].start_row;
-  int End_Row_dest = vert_list[dest].end_row;
-  int col_diff;
-  int row_diff;
-  int weight = 0;
-  //printf("Col Dest: %d\n", Start_Row_source);
-  if (col_dest > col_source)
-  {
-    col_diff = col_dest - col_source;
-  }
-  else
-  {
-    col_diff = col_source - col_dest;
-  }
-  //printf("col_diff %d\n", col_diff);
-  //Smallest Difference in Rows of the Node
-  if (Start_Row_source > Start_Row_dest)
-  {
-    row_diff = Start_Row_source - End_Row_dest;
-  }
-  else
-  {
-    row_diff = Start_Row_dest - End_Row_Source;
-  }
-
-  //Calculate the Weight
-  int weight_row = (2 * row_diff) - 2;
-  int weight_col = (2 * col_diff) - 1;
-  //printf("Row Weight: %d\n\n", weight_row);
-  //printf("Row Diff: %d\n", row_diff);
-  
-  if ((row_diff > col_diff))
-  {
-    weight = weight_row;
-  }
-  else if ((col_diff > row_diff))
-  {
-    weight = weight_col;
-  }
-  if ((row_diff < 0))
-  {
-    weight = weight_col;
-  }
-  if ((col_diff < 0))
-  {
-    weight = weight_row;
-  }
-  
-    
-  //printf("Weight: %d\n", weight);
-  if ((col_source == 0))
-  {
-    //printf("test\n");
-    weight--;
-    //weight--;
-  }
-  //printf("Weight: %d\n", weight);
- return weight; 
-}
-*/
 Edge * newEdge(int index, int source, int weight)
 {
   Edge * edge = malloc(sizeof(Edge));
@@ -357,7 +288,7 @@ Edge * InsertEdge(Edge * Head, int index, int source, int weight)
     return Head;
   }
   
-}
+} 
 
 void adj_list_build(Vertex * vert_list, int size, int N, int verts)
 {
@@ -378,20 +309,111 @@ void adj_list_build(Vertex * vert_list, int size, int N, int verts)
      }
     }
   }
-  Edge * Head = vert_list[0].head;
+  Edge * Head = vert_list[1].head;
   while (Head != NULL)
   {
-    printf("Head Index = %d\n", Head -> vertex_idx);
+    printf("Head Source = %d\n", Head -> source);
+    printf("Head Dest = %d\n", Head -> vertex_idx);
     printf("Head Weight = %d\n", Head -> weight);
     Head = Head -> next;
-  }  
+  } 
 }
-      
+
+/*int Turns_Helper(Vertex * vert_list, int N, int verts)
+{
+  int i;
+  Edge * edge = 0;
+  int Best = (2 * N + 1);
+  int current = 0;
+  for (i = 0; i < verts; i++)
+  {
+    edge = vert_list[i].head;
+    current = edge -> weight; 
+    TurnsBest(vert_list, edge, Best, Current);
+  }
+}
+
+void TurnsBest(Vertex * vert_list, Edge * edge, int * Best, int current)
+{
+  */
+  
+  
+/*Edge * adj_list_build(Vertex * vert_list, int size, int N, int verts)
+{
+  int i = 0;
+  int weight;
+  int index;
+  verts = verts + 2;
+  Edge * edge = malloc(sizeof(Edge) * (verts - 1));
+  //int num_edges = (verts - 1) * (verts);
+  
+  //Vertex * adj_list = malloc(sizeof(Vertex) * (verts));
+  int edge_idx = 0;
+  
+  for (index = 0; index < verts;index++)
+  {
+    for (i = 0; i < verts; i++)
+    {
+      if (i != index)
+      {
+	edge[edge_idx].source = index;
+	edge[edge_idx].vertex_idx = i;
+	weight = FindWeight(vert_list,index,i);
+	edge[edge_idx].weight = weight;
+	edge_idx++;
+      }
+    }
+    //printf("for\n");
+  }
+  for (i = 0; i < edge_idx; i++)
+  {
+    printf("Source = %d\n", edge[i].source);
+    printf("Edge Index = %d\n", edge[i].vertex_idx);
+    printf("Weight = %d\n", edge[i].weight);
+    printf("\n\n");
+  } 
+  return edge;
+} */
+
+/*void Bellman_Ford(Edge * edge, int verts, int N)
+{
+  int dist[verts];
+  int i,j,k;
+  
+  for (k = 0; k < verts; k++)
+  {
+    dist[k] = 1994;
+  }
+  
+  dist[0] = 0;
+  int num_edges = verts * (verts -1);
+   for (i = 1; i <= verts - 1; i++)
+   {
+      for (j = 0; j < num_edges ; j++)
+      {
+        int u = edge[j].source;
+        int v = edge[j].vertex_idx;
+        int weight = edge[j].weight;
+        if (dist[u] + weight < dist[v])
+	{
+           dist[v] = dist[u] + weight;
+	}
+      }
+    }
+  int m = 0;
+  for (m = 0; m < verts; m++)
+  {
+    printf("Turns: %d\n", dist[m]);
+  } 
+} */
+    
+    
+  
       
 void Bellman_Ford(Vertex * vert_list, int verts, int N)
 {
   int dist[verts];
-  int i;
+  int i,k;
   int weight = 0;
   Edge * tmp = NULL;
   for (i = 0; i < verts; i++)
@@ -401,33 +423,43 @@ void Bellman_Ford(Vertex * vert_list, int verts, int N)
   
   dist[0] = 0;
   
-  for (i = 1; i <= (verts - 1); i++)
+  for (k = 0; k <= (verts - 1); k++)
   {
-    tmp = vert_list[i].head;
-    while (tmp != NULL)
+    tmp = vert_list[k].head;
+    for (i = 1; i <= (verts -1); i++)
     {
-      //int u = i -1; //Source
-      int u = tmp -> source;
-      //int v = vert_list -> head[j].vertex_idx; //dest
-      int v = tmp -> vertex_idx;
-      weight = tmp -> weight;
-      //weight = vert_list -> head[j].weight; //weight
-      if (dist[v] > dist[u] + weight)
+      while (tmp != NULL)
       {
-	dist[v] = dist[u] + weight;
+	//tmp = vert_list[j].head;
+	int u = tmp -> source;
+	//int u = vert_list -> head[1].source; //source
+	//int v = vert_list -> head[1].vertex_idx; //dest
+	int v = tmp -> vertex_idx;
+	weight = tmp -> weight;
+	//weight = vert_list -> head[1].weight; //weight
+	if (dist[v] > dist[u] + weight)
+	{
+	  dist[v] = dist[u] + weight;
+	}
+	//printf("Bellman:\n");
+	//printf("Source: %d\n", u);
+	//printf("Dest: %d\n", v);
+	//printf("Weight: %d\n", weight);
+	//printf("\n");
+	tmp = tmp -> next; 
       }
-      tmp = tmp -> next;
     }
-  }
-  printf("\n\n\n\n");
+  printf("\n");
   int m = 0;
   for (m = 0; m < verts; m++)
   {
     printf("Turns: %d\n", dist[m]);
-  }
- 
-}
-  
+  } 
+  printf("\n");  
+  } 
+} 
+
+
       
       
       
